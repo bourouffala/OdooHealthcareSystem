@@ -1,0 +1,159 @@
+<odoo>
+<data>
+    <report
+        id="report_prestation"
+        model="medical.prestation_sale"
+        string="Fiche de liaison"
+        name="prestation.report_fiche_liaison_view"
+        file="prestation.report_fiche_liaison_view"
+        report_type="qweb-pdf" />
+
+
+        
+
+        <template id="report_fiche_liaison_view">
+            
+                <t t-foreach="docs" t-as="doc">
+                    <div class="page">
+                        
+                        <h1 style="text-align: center;">FICHE SANITAIRE DE LIAISON:</h1>
+                        <div style="border:1px solid black; padding:16px;">
+                            <h3 style="text-align: center;">RENSEIGNEMENT DU MALADE:</h3>
+                            <p><strong>NOM:</strong><span style="margin-left:15px;" t-field="doc.partner_id.name"/></p>
+                            <p><strong>AGE:</strong><span style="margin-left:15px;" t-field="doc.patient.name"/></p>
+                            <p><strong>PATHOLOGIE:</strong><span style="margin-left:15px;" t-field="doc.patient.name"/></p>
+                            <p><strong>ETAT CLINIQUE:</strong><span style="margin-left:15px;" t-field="doc.patient.name"/></p>
+                            
+                        </div>
+                        <p/>
+                        <p/>
+                         <div style="border:1px solid black; padding:16px;">
+                            <h3 style="text-align: center;">TRANSFERT:</h3>
+                            <p><strong>TRANSFERT DE:</strong><span style="margin-left:15px;" t-field="doc.transfert_de"/></p>
+                            <p><strong>VERS:</strong><span style="margin-left:15px;" t-field="doc.vers"/></p>
+                            <p><strong>MOTIF DE TRANSFERT:</strong><span style="margin-left:15px;" t-field="doc.motif_transport"/></p>
+                            <p><strong>ACCORD DU SERVICE D'ACCEUIL:</strong>
+                            <t t-if="doc.accord">
+                                <span style="margin-left:15px;" >OUI</span>
+                            </t>
+                            <t t-if="not doc.accord">
+                                <span style="margin-left:15px;" >NON</span>
+                            </t>
+                            </p>
+                            <p><strong>TYPE DE TRANSFERT:</strong><span style="margin-left:15px;" t-field="doc.type_transfert"/></p>
+                            
+                        </div>
+                        
+                        <p/>
+                        <p/>
+                            <div style="border:1px solid black; padding:16px;text-align: center;width:40%;float:right;height:200px;">EMMARGEMENT DU RESPONSABLE DU SERVICE D'ACCUEIL:</div>
+                            <div style="border:1px solid black; padding:16px;text-align: center;width:40%;height:200px;">EMMARGEMENT DU RESPONSABLE DU SERVICE DEMANDEUR DU TRANSFERT:</div>
+                            
+                        
+                        
+                    </div>
+                </t>
+            
+    </template>
+
+
+
+    <template id="report_fiche_liaison_view">
+            
+                <t t-foreach="docs" t-as="doc">
+                    <div class="page">
+                        
+                        <h1 style="text-align: center;">FICHE SANITAIRE DE LIAISON:</h1>
+                        <div style="border:1px solid black; padding:16px;">
+                            <h3 style="text-align: center;">RENSEIGNEMENT DU MALADE:</h3>
+                            <p><strong>NOM:</strong><span style="margin-left:15px;" t-field="doc.partner_id.name"/></p>
+                            <p><strong>AGE:</strong><span style="margin-left:15px;" t-field="doc.partner_id.age"/></p>
+                            <p><strong>PATHOLOGIE:</strong><span style="margin-left:15px;" t-field="doc.pathology"/></p>
+                            <p><strong>ETAT CLINIQUE:</strong><span style="margin-left:15px;" t-field="doc.etat_clinique"/></p>
+                            
+                        </div>
+                        <p/>
+                        <p/>
+                         <div style="border:1px solid black; padding:16px;">
+                            <h3 style="text-align: center;">TRANSFERT:</h3>
+                            <p><strong>TRANSFERT DE:</strong><span style="margin-left:15px;" t-field="doc.transfert_de"/></p>
+                            <p><strong>VERS:</strong><span style="margin-left:15px;" t-field="doc.vers"/></p>
+                            <p><strong>MOTIF DE TRANSFERT:</strong><span style="margin-left:15px;" t-field="doc.motif_transport"/></p>
+                            <p><strong>ACCORD DU SERVICE D'ACCEUIL:</strong>
+                            <t t-if="doc.accord">
+                                <span style="margin-left:15px;" >OUI</span>
+                            </t>
+                            <t t-if="not doc.accord">
+                                <span style="margin-left:15px;" >NON</span>
+                            </t>
+                            </p>
+                            <p><strong>TYPE DE TRANSFERT:</strong><span style="margin-left:15px;" t-field="doc.type_transfert"/></p>
+                            
+                        </div>
+                        
+                        <p/>
+                        <p/>
+                            <div style="border:1px solid black; padding:16px;text-align: center;width:40%;float:right;height:200px;">EMMARGEMENT DU RESPONSABLE DU SERVICE D'ACCUEIL:</div>
+                            <div style="border:1px solid black; padding:16px;text-align: center;width:40%;height:200px;">EMMARGEMENT DU RESPONSABLE DU SERVICE DEMANDEUR DU TRANSFERT:</div>
+                            
+                        
+                        
+                    </div>
+                </t>
+            
+    </template>
+
+</data>
+<data>
+<report
+        id="report_ordonance"
+        model="medical.prestation_sale"
+        string="Ordonance"
+        name="prestation.report_ordonance_view"
+        file="prestation.report_ordonance_view"
+        report_type="qweb-pdf" />
+   <template id="report_ordonance_view">
+   <t t-call="report.external_layout">
+     
+   <t t-foreach="docs" t-as="doc">
+    <div class="page">
+        <div style="margin-left:80%;">
+        Alger le:<span style="margin-left:15px;" t-field="doc.date"/>
+        <span t-usertime=""/>
+        </div>
+        <center>
+
+
+        <h2>
+                
+                <span>Ordonance </span>
+                
+            </h2>
+            </center>
+        <div>
+        Délivrée par:<span style="margin-left:15px;" t-field="doc.user_id"/>
+        </div>   
+        
+         <div>
+        Nom:<span style="margin-left:15px;margin-right:15px;" t-field="doc.partner_id.name"/>
+        Age:<span style="margin-left:15px;" t-field="doc.partner_id.age"/>
+        </div>  
+        <p/><p/><p/>
+     <t t-foreach="doc.order_line" t-as="value">
+                  <span t-if="value.prduitcategory.medecament==true">
+                  
+                     
+                  <p><t t-esc="value.name"/></p>
+                  </span>
+                  
+                
+           </t>     
+    </div>
+    </t>
+</t>
+    
+    </template>
+
+    
+</data>
+</odoo>

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_medical_prestation_sale_tree" model="ir.ui.view">
+            <field name="name">medical.prestation_sale.tree</field>
+            <field name="model">medical.prestation_sale</field>
+            <field name="priority" eval="8" />
+            <field name="arch" type="xml">
+                <tree string="Prestation médical">
+                    <field name="name_prestation" />
+                     <field name="partner_id" />
+                     <field name="heure_souhaite" />
+                     <field name="point_depart"  />
+                     <field name="state" />                     
+                    
+                </tree>
+            </field>
+        </record>
+        
+
+
+        <record id="view_medical_prestation_sale_form" model="ir.ui.view">
+            <field name="name">medical.prestation_sale.form</field>
+            <field name="model">medical.prestation_sale</field>
+            <field name="priority" eval="8" />
+            <field name="arch" type="xml">
+                <form string="les prestations">
+                    <header>
+                    
+                    <button name="action_quotation_send" string="Envoyer par mail" type="object" states="draft" class="btn-primary"/>
+                    <button name="print_quotation" string="Imprimer" type="object" states="draft" class="btn-primary"/>
+                    <button name="action_confirm" states="sent" string="Fin de mission" class="btn-primary o_sale_confirm" type="object" />
+                    <button name="action_confirm" states="draft" string="Fin de mission" class="o_sale_confirm" type="object" />
+                    <button name="print_quotation" string="Print" type="object" states="sent,sale"/>
+                    <button name="action_quotation_send" string="Envoyer par mail" type="object" states="sent,sale"/>
+                    <button name="action_cancel" states="draft,sent,sale" type="object" string="Annuler"/>
+                    <button name="action_draft" states="cancel" type="object" string="Remetre en prestation"/>
+                    <button name="action_done" type="object" string="Verrouiller" states="sale"
+                        help="If the sale is locked, you can not modify it anymore. However, you will still be able to invoice or deliver."/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale"/>
+                </header>
+                    <sheet>
+                   
+                    <group>
+                            <group>
+                                <field name="type_patient" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                
+                               <field name="test_fact" invisible="1" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field String="Patient" name="partner_id" domain="[('is_company','=',False),('customer','=',True)]" />
+                                 <field String="Demandeur" attrs="{'invisible':[('type_demande','=', '1')]}"  name="demandeur" domain="[('is_company','=',False),('customer','=',True)]"/>                                                                 
+                                <field  name="heure_appel" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="point_depart" attrs="{'readonly':[('state','in', ['sale','done','cancel'])],'invisible':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="point_depart_reel" attrs="{'readonly':[('state','in', ['finmission','cancel','draft'])],'invisible':[('state','in', ['cancel','draft'])]}" />
+                                <field name="aller_retour" attrs="{'readonly':[('state','in', ['sale','done','cancel'])],'readonly': [('aller_simple', '=', True)]}"/>
+                                <field name="pec_interne" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="garde_malade" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="name" invisible="1"/>
+                                <field name="state" invisible="True"/>
+                                <field name="pricelist_id"/>
+                                <field name="temps_attente" attrs="{'readonly':[('state','in', ['finmission','cancel','draft'])],'invisible':[('state','in', ['cancel','draft'])]}" />
+
+                                
+                            </group>
+                            <group>
+                                <field  invisible="1" name="company_id"/>
+                                <field name="type_demande" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field String="Société" attrs="{'readonly':[('type_patient','in', ['1'])]}" name="partner_id_socity" domain="[('is_company','=',True),('customer','=',True)]" />
+                                <field name="heure_souhaite" attrs="{'readonly':[('state','in', ['sale','done','cancel'])],'invisible':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="point_chute" attrs="{'readonly':[('state','in', ['sale','done','cancel'])],'invisible':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="point_chute_reel" attrs="{'readonly':[('state','in', ['finmission','cancel','draft'])],'invisible':[('state','in', ['cancel','draft'])]}" />
+                                <field name="aller_simple" attrs="{'readonly':[('state','in', ['sale','done','cancel'])],'readonly': [('aller_retour', '=', True)]}"/>
+                                <field name="pec_etranger" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="couverture_med_san" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="equipe_interv" attrs="{'readonly':[('state','in', ['sale','done','cancel'])]}"/>
+                                <field name="fiche_liaison_state" attrs="{'invisible':[('state','in', ['draft','cancel'])], 'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                            </group>
+
+                        </group>
+                    
+                    
+                    <group>
+                        
+                        
+                        
+                    </group>
+                         <notebook>
+                        <page string="Lignes">
+                          
+                            <field name="order_line" mode="tree,kanban" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                                <form string="Sales Order Lines">
+                                    <group>
+                                        <group>
+                                            <field name="product_id" context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}" attrs="{'readonly': ['|', ('qty_invoiced', '&gt;', 0), ('procurement_ids', '!=', [])]}"/>
+                                            <field name="layout_category_id" groups="sale.group_sale_layout"/>
+                                            <field name="invoice_status" invisible="1"/>
+                                            <field name="qty_to_invoice" invisible="1"/>
+                                            <field name="qty_delivered_updateable" invisible="1"/>
+                                            <field name="procurement_ids" invisible="1"/>
+                                            <field name="price_subtotal" invisible="1"/>
+                                            <label for="product_uom_qty" string="Ordered Quantity"/>
+                                            <div>
+                                                <field context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'uom_qty_change':True, 'company_id': parent.company_id}" name="product_uom_qty" class="oe_inline"/>
+                                                <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
+                                            </div>
+                                            <label for="qty_delivered" string="Delivered Quantity" invisible="context.get('hide_sale')"/>
+                                            <div invisible="context.get('hide_sale')">
+                                                <field name="qty_delivered" attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/>
+                                            </div>
+                                            <label for="qty_invoiced" string="Invoiced Quantity" invisible="context.get('hide_sale')"/>
+                                            <div invisible="context.get('hide_sale')">
+                                                <field name="qty_invoiced" invisible="context.get('hide_sale')"/>
+                                            </div>
+                                            <field name="price_unit"/>
+                                            <label for="discount" groups="sale.group_discount_per_so_line"/>
+                                            <div name="discount" groups="sale.group_discount_per_so_line">
+                                                <field name="discount" class="oe_inline"/> %
+                                            </div>
+                                        </group>
+                                        <group>
+                                            <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                            <label for="customer_lead"/>
+                                            <div>
+                                                <field name="customer_lead" class="oe_inline"/> days
+                                            </div>
+                                            <label for="analytic_tag_ids"/>
+                                            <div>
+                                                <field name="analytic_tag_ids" widget="many2many_tags"/>
+                                            </div>
+                                        </group>
+                                    </group>
+                                    <label for="name"/>
+                                    <field name="name"/>
+                                    <div groups="base.group_no_one">
+                                        <label for="invoice_lines"/>
+                                        <field name="invoice_lines"/>
+                                    </div>
+                                    <field name="state" invisible="1"/>
+                                </form>
+                                <tree string="Sales Order Lines" editable="bottom" decoration-info="invoice_status=='to invoice'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="prduitcategory" />
+                                    <field name="product_id" domain="[('categ_id','=',prduitcategory)]" attrs="{'readonly': ['|', ('qty_invoiced', '&gt;', 0), ('procurement_ids', '!=', [])]}" context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"/>
+                                    <field name="layout_category_id" groups="sale.group_sale_layout"/>
+                                    <field name="name"/>
+                                    <field name="product_uom_qty" string="Ordered Qty" context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"/>
+                                    <field name="qty_delivered" invisible="context.get('hide_sale')" attrs="{'readonly': [('qty_delivered_updateable', '=', False)]}"/>
+                                    <field name="qty_invoiced" invisible="context.get('hide_sale')"/>
+                                    <field name="qty_to_invoice" invisible="1"/>
+                                    <field name="product_uom" attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}" context="{'company_id': parent.company_id}" groups="product.group_uom" options="{&quot;no_open&quot;: True}"/>
+                                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags"/>
+                                    <field name="price_unit" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                    <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                    <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                    <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
+                                    <field name="price_total" widget="monetary" groups="sale.group_show_price_total"/>
+                                    <field name="qty_delivered_updateable" invisible="1"/>
+                                    <field name="procurement_ids" invisible="1"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="invoice_status" invisible="1"/>
+                                    <field name="customer_lead" invisible="1"/>
+                                </tree>
+                                <kanban class="o_kanban_mobile">
+                                    <field name="product_id"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="product_uom" groups="product.group_uom"/>
+                                    <field name="price_subtotal"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <strong><span><t t-esc="record.product_id.value"/></span></strong>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-8 text-muted">
+                                                        <span><t t-esc="record.product_uom_qty.value"/> <t t-esc="record.product_uom.value"/></span>
+                                                    </div>
+                                                    <div class="col-xs-4 text-muted">
+                                                        <span class="pull-right text-right"><t t-esc="record.price_subtotal.value"/></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="amount_total"/>
+                                    <button name="button_dummy" states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <field name="note" class="oe_inline" placeholder="Setup default terms and conditions in your company settings."/>
+                            <div class="oe_clear"/>
+                        </page>
+
+
+                        
+                        
+                        
+                            
+                           
+                           <page name="Observation"
+                             string="Observation">
+                                <group col="2" colspan="2">
+                                    <field name="observation" attrs="{'readonly':[('state','in', ['draft','sale','done','cancel'])]}" />
+                                 </group>
+                            </page>
+
+                            <page name="Fiche de liaison"
+                             string="Fiche de liaison" attrs="{'invisible': [('fiche_liaison_state', '=', False)]}">
+                                  <group >
+                                   
+                                       
+                                        <group >
+                                           <field name="transfert_de" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           <field name="vers" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           <field name="motif_transport" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           <field name="accord" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           <field name="type_transfert" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           </group>
+
+                                            <group >
+                                           <field name="pathology" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           <field name="etat_clinique" attrs="{'readonly':[('state','in', ['done','cancel','draft'])]}" />
+                                           
+                                           </group>
+                                     </group>
+                                 
+                            </page>
+
+                             <page name="Conclusion"
+                             string="Conclusion">
+                                <group col="2" colspan="2">
+                                    <field name="conclusion" attrs="{'readonly':[('state','in', ['done','draft','cancel'])]}" />
+                                 </group>
+                            </page>   
+                        
+                    </notebook>
+                    </sheet>
+                </form>
+            
+            
+            </field>
+        </record>
+        <record id="view_medical_prestation_sale_search" model="ir.ui.view">
+            <field name="name">medical.prestation_sale.search</field>
+            <field name="model">medical.prestation_sale</field>
+            <field name="priority" eval="8" />
+            <field name="arch" type="xml">
+                <search string="Testing Unit">
+                     <field name="partner_id" operator="child_of"/>
+                    <field name="name" />
+                    <field name="state" />
+                    <group expand="0" string="Group By...">
+                        <filter name="name" string="Blood Group"></filter>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="act_open_medical_prestation_sale_view">
+            <field name="name">Prestation médical</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">medical.prestation_sale</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_medical_prestation_sale_search" />
+            <field name="domain">[('state', 'in', ('draft', 'sale', 'cancel'))]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer une nouvelle prestation.
+                </p>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="act_open_medical_fin_mission_sale_view">
+            <field name="name">Prestation médical</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">medical.prestation_sale</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_medical_prestation_sale_search" />
+            <field name="domain">[('state', 'in', ( 'sale', 'cancel'))]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer une nouvelle prestation.
+                </p>
+            </field>
+        </record>
+
+         <record id="view_res_partner_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                
+            <xpath expr="//field[@name='website']" position="before">
+                <field name="date_naissance" />
+                <field name="nss_pat" />
+                <field name="date_actuel" invisible="1"/>
+            </xpath>
+               
+            </field>
+        </record>
+
+        <record id="view_product_product_inherit" model="ir.ui.view">
+            <field name="name">product.category.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                
+           <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="medecament" string="Médicament"/>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="prestation" />
+            </xpath>
+               
+            </field>
+        </record>
+
+        <record id="view_res_partner_search_inherit" model="ir.ui.view">
+            <field name="name">res.partner.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                
+           <xpath expr="//field[@name='name']" position="before">
+                <field name="mobile" string="Téléphone"/>
+            </xpath>
+            
+               
+            </field>
+        </record>
+
+
+
+        <record id="act_res_partner_2_prestation" model="ir.actions.act_window">
+            <field name="name">Prestation</field>
+            <field name="res_model">medical.prestation_sale</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="context">{'search_default_partner_id': active_id}</field>
+            <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Create a Quotation, the first step of a new sale.
+              </p><p>
+                Your next actions should flow efficiently: confirm the Quotation to a Sale Order, then create the Invoice and collect the Payment.
+              </p><p>
+                Note that once a Quotation becomes a Sale Order, it will be moved from the Quotations list to the Sales Order list.
+              </p>
+            </field>
+        </record>
+
+        <record id="res_partner_view_buttons2" model="ir.ui.view">
+            <field name="name">res.partner.view.buttons2</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="priority" eval="20"/>
+            <field name="groups_id" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action" name="%(prestation.act_res_partner_2_prestation)d" 
+                        attrs="{'invisible': [('customer', '=', False)]}"
+                        icon="fa-usd">
+                        <field  name="number_pres" widget="statinfo"/>
+                    </button>     
+                </div>
+                
+                
+            </field>
+        </record>
+   
+    <menuitem name="Prestation" sequence="100" id="prestation_id" web_icon="prestation,static/description/icon.png"/>
+    
+   
+
+<menuitem id="medical_prestation_id_patient"
+                  name="Patient"
+                  parent="prestation_id"
+                  action="base.action_partner_form"
+                  sequence="2"/>
+
+        
+         <menuitem id="medical_prestation_id"
+                  name="Dossiers ouverts"
+                  parent="prestation_id"
+                  sequence="100"/>
+        <menuitem name="Presation"
+          id="medical_prestation_sale_conf"
+          parent="medical_prestation_id"
+          action="act_open_medical_prestation_sale_view"
+          sequence="1" />
+         <menuitem id="dossier_id"
+                  name="Fin de mission"
+                  parent="prestation_id"
+                  sequence="100"/>
+          <menuitem name="Fin de mission"
+          id="medical_fin_mission_sale_conf"
+          parent="dossier_id"
+          action="act_open_medical_fin_mission_sale_view"
+          sequence="20" />
+    </data>
+</odoo>
